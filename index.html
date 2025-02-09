@@ -1,76 +1,71 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bilderanzeige</title>
-  <!-- Google Fonts für Orbitron -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    body {
-      background-color: #000;
-      font-family: 'Orbitron', sans-serif;
-      margin: 0;
-      padding: 0;
-      color: #00ffe0;
-    }
-    .top-bar {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      padding: 0.5em 1em;
-      border-bottom: 2px solid #00ffff;
-      background-color: #050505;
-    }
-    .controls button {
-      margin-left: 0.5em;
-      background: transparent;
-      border: 1px solid #00ffff;
-      color: #00ffff;
-      padding: 0.3em 0.6em;
-      cursor: pointer;
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
-    .controls button:hover {
-      background: #00ffff;
-      color: #000;
-    }
-    .main-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: calc(100vh - 50px);
-    }
-    .image-display {
-      text-align: center;
-    }
-    .answer-image {
-      max-width:95%; /* Maximale Breite, responsive */
-      height: auto;   /* Erhält das Seitenverhältnis */
-      border: 1px solid #00ffff;
-      box-shadow: 0 0 5px #00ffff;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Entspannungs-Puzzle</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+        #fullscreenImage {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            visibility: hidden;
+        }
+        #fullscreenImage img {
+            max-width: 90%;
+            max-height: 90%;
+        }
+    </style>
 </head>
 <body>
-  <div class="top-bar">
-    <div class="controls">
-      <button id="pauseBtn">PAUZĂ</button>
-      <button id="resumeBtn">MAI DEPARTE</button>
+    <div id="fullscreenImage" onclick="this.style.visibility='hidden'">
+        <img id="fullscreenImg" src="" alt="Fullscreen Image">
     </div>
-  </div>
 
-  <div class="main-container">
-    <div class="image-display" id="imageDisplay"></div>
-  </div>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/examples/js/controls/OrbitControls.js"></script>
+    <script>
+        const scene = new THREE.Scene();
+        const textureLoader = new THREE.TextureLoader();
+        
+        // Hintergrundbild als großes Plane-Objekt
+        const bgTexture = textureLoader.load('https://cdn.gamma.app/fhpleqvbjim2f32/b3044f0e657a490185581341982a9508/original/image-1.jpg');
+        const bgGeometry = new THREE.PlaneGeometry(window.innerWidth / 12, window.innerHeight / 12);
+        const bgMaterial = new THREE.MeshBasicMaterial({ map: bgTexture, side: THREE.DoubleSide });
+        const backgroundMesh = new THREE.Mesh(bgGeometry, bgMaterial);
+        backgroundMesh.position.set(0, 0, -20);
+        scene.add(backgroundMesh);
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      // Das Bilder-Array
-      const images = [
-         'https://cdn.gamma.app/fhpleqvbjim2f32/0ec454b770cb4c2a8ff58c9656dec00e/original/Screenshot-2024-05-28-182017.jpg',
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+
+        const ambientLight = new THREE.AmbientLight(0x4a90e2, 0.7);
+        scene.add(ambientLight);
+       const directionalLight = new THREE.DirectionalLight(0x4a90e2, 0.8);
+       directionalLight.position.set(10, 10, 10);
+        scene.add(directionalLight);
+
+        const images = [
+           'https://cdn.gamma.app/fhpleqvbjim2f32/0ec454b770cb4c2a8ff58c9656dec00e/original/Screenshot-2024-05-28-182017.jpg',
            'https://cdn.gamma.app/fhpleqvbjim2f32/775f46ea77264221ae61949f501c6a94/original/ResponsabilMinca.jpg',
             'https://cdn.gamma.app/fhpleqvbjim2f32/7976b5c11d9843538ecb535ca0259580/original/DescrietiDelictulCostinel.jpg',
             'https://cdn.gamma.app/fhpleqvbjim2f32/613906785f49441e8fa33e211b4f2249/original/Costinel.jpg',
@@ -94,55 +89,79 @@
             'https://cdn.gamma.app/fhpleqvbjim2f32/db21ea2cc5f8414694a756efd0260115/original/Pregatire2.jpg',
             'https://cdn.gamma.app/fhpleqvbjim2f32/a79e85cb9546482a9486ee411f67dab9/original/Carnetul1.jpg',
             'https://cdn.gamma.app/fhpleqvbjim2f32/6a4df6dcdeba44bbbb080f9e9a594b9c/original/Screenshot-2024-06-13-194929.jpg'
-      ];
 
-      const imageDisplay = document.getElementById('imageDisplay');
-      const pauseBtn = document.getElementById('pauseBtn');
-      const resumeBtn = document.getElementById('resumeBtn');
+    ];
+         
+     const geometry = new THREE.BoxGeometry(1.5, 0.75, 0.4);
+        const pieces = [];
 
-      let currentImageIndex = 0;
-      const delayBetweenImages = 7000; // 7 Sekunden zwischen den Bildern
-      let isPaused = false;
-      let intervalId;
+        images.forEach((image, index) => {
+            const texture = textureLoader.load(image);
+            const material = new THREE.MeshBasicMaterial({ map: texture });
+            const piece = new THREE.Mesh(geometry, material);
 
-      function showNextImage() {
-        if (isPaused) return;
+           piece.position.x = (index % 6 - 2.5) * 2.2;
+            piece.position.y = (Math.floor(index / 6) * -1.8) + 3;
+            piece.position.z = 5;
 
-        // Leere den Container, sodass immer nur ein Bild angezeigt wird
-        imageDisplay.innerHTML = "";
+            piece.userData.imageSrc = image;
+            pieces.push(piece);
+            piece.rotation.y = (Math.random() - 0.5) * 0.2; // Zufällige Startrotation
+            piece.rotation.x = (Math.random() - 0.5) * 0.2;
+            scene.add(piece);
+        });
 
-        // Erstelle das Bild-Element
-        const img = document.createElement('img');
-        img.src = images[currentImageIndex];
-        img.alt = "Bild";
-        img.classList.add('answer-image');
+        camera.position.z = 13;
 
-        // Füge das Bild dem Container hinzu
-        imageDisplay.appendChild(img);
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
 
-        // Aktualisiere den Index
-        currentImageIndex++;
-        if (currentImageIndex >= images.length) {
-          currentImageIndex = 0; // Starte von vorne, wenn alle Bilder angezeigt wurden
+        function onMouseClick(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(pieces);
+
+            if (intersects.length > 0) {
+                const clickedPiece = intersects[0].object;
+                document.getElementById('fullscreenImg').src = clickedPiece.userData.imageSrc;
+                document.getElementById('fullscreenImage').style.visibility = 'visible';
+         
+             // Animation beim Klicken
+                clickedPiece.rotation.y += Math.PI / 8;
+                let rotationStep = Math.PI / 64;
+                let steps = 8;
+                let counter = 0;
+                let interval = setInterval(() => {
+                    clickedPiece.rotation.y -= rotationStep;
+                    counter++;
+                    if (counter >= steps) clearInterval(interval);
+                }, 25);
+             }
         }
-      }
 
-      // Starte den Timer, der die Bilder wechselt
-      intervalId = setInterval(showNextImage, delayBetweenImages);
-      showNextImage(); // Bild sofort anzeigen
+        window.addEventListener('click', onMouseClick);
 
-      // Pause- und Resume-Funktionen
-      pauseBtn.addEventListener('click', function() {
-        isPaused = true;
-      });
+    function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
 
-      resumeBtn.addEventListener('click', function() {
-        if (isPaused) {
-          isPaused = false;
-          showNextImage(); // Zeige sofort das nächste Bild
-        }
-      });
+    // *** HIER ROTATION FÜR ALLE WÜRFEL HINZUFÜGEN ***
+    pieces.forEach(piece => {
+        piece.rotation.y += 0.0075; // Rotationsgeschwindigkeit anpassen (kleiner = langsamer, größer = schneller)
     });
-  </script>
+
+    renderer.render(scene, camera);
+}
+animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            backgroundMesh.scale.set(window.innerWidth / 12, window.innerHeight / 12, 1);
+      });
+    </script>
 </body>
 </html>
