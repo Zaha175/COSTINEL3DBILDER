@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bilderanzeige</title>
+  <!-- Google Fonts für Orbitron -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #000;
+      font-family: 'Orbitron', sans-serif;
+      margin: 0;
+      padding: 0;
+      color: #00ffe0;
+    }
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0.5em 1em;
+      border-bottom: 2px solid #00ffff;
+      background-color: #050505;
+    }
+    .controls button {
+      margin-left: 0.5em;
+      background: transparent;
+      border: 1px solid #00ffff;
+      color: #00ffff;
+      padding: 0.3em 0.6em;
+      cursor: pointer;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .controls button:hover {
+      background: #00ffff;
+      color: #000;
+    }
+    .main-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: calc(100vh - 50px);
+    }
+    .image-display {
+      text-align: center;
+    }
+    .answer-image {
+      max-width:95%; /* Maximale Breite, responsive */
+      height: auto;   /* Erhält das Seitenverhältnis */
+      border: 1px solid #00ffff;
+      box-shadow: 0 0 5px #00ffff;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <div class="controls">
+      <button id="pauseBtn">PAUZĂ</button>
+      <button id="resumeBtn">MAI DEPARTE</button>
+    </div>
+  </div>
+
+  <div class="main-container">
+    <div class="image-display" id="imageDisplay"></div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Das Bilder-Array
+      const images = [
+         'https://cdn.gamma.app/fhpleqvbjim2f32/0ec454b770cb4c2a8ff58c9656dec00e/original/Screenshot-2024-05-28-182017.jpg',
+           'https://cdn.gamma.app/fhpleqvbjim2f32/775f46ea77264221ae61949f501c6a94/original/ResponsabilMinca.jpg',
+            'https://cdn.gamma.app/fhpleqvbjim2f32/7976b5c11d9843538ecb535ca0259580/original/DescrietiDelictulCostinel.jpg',
+            'https://cdn.gamma.app/fhpleqvbjim2f32/613906785f49441e8fa33e211b4f2249/original/Costinel.jpg',
+            'https://cdn.gamma.app/fhpleqvbjim2f32/05fcdcce7102496e80d14df0207a9425/original/Screenshot-2024-05-29-084929.jpg',
+            'https://cdn.gamma.app/fhpleqvbjim2f32/da29e40b095f4d99860f40bc22946f46/original/costinel.jpg',
+           'https://cdn.gamma.app/fhpleqvbjim2f32/90880d9c133d4ad7ad5934eafb76a450/original/cOSTINEL.jpg',
+            'https://cdn.gamma.app/fhpleqvbjim2f32/76fee5f5b6db408a9b12c825e0af3310/original/EfectDesCondus1.jpg',
+            'https://cdn.gamma.app/fhpleqvbjim2f32/d36d0e263a5844aca0b8508dd5f754d5/original/EfectDesCondus2.jpg',
+            'https://cdn.gamma.app/fhpleqvbjim2f32/ac01684942c34c0d8cb689c7083984cf/original/SentimenteMinca.jpg',
+            'https://cdn.gamma.app/fhpleqvbjim2f32/900b56485b4d4b8f8f6e89a4216e814e/original/PunktdecotituraCostinel.jpg',
+            'https://cdn.gamma.app/fhpleqvbjim2f32/484e6aea799142be99a1ba5761462da9/original/Deceatirenuntatlaalcool1.jpg',
+            'https://cdn.gamma.app/fhpleqvbjim2f32/ef8653aca8c64fcb8e2bfb1ee084df21/original/2.jpg',
+            'https://cdn.gamma.app/fhpleqvbjim2f32/25f1a3274fb84bdcae17b8eab1833271/original/CostinelConsum.jpg',
+            'https://cdn.gamma.app/fhpleqvbjim2f32/3e357d1ab12348569a98b67fcec0e85c/original/CAUZECOSTINEL.jpg',
+            'https://cdn.gamma.app/fhpleqvbjim2f32/5564340c957c4548bf72fae1a8f24752/original/StresulMinca.jpg',
+            'https://cdn.gamma.app/fhpleqvbjim2f32/70187bad93ed4e1b9d3081750877f4a9/original/DependentMinca.jpg',
+            'https://cdn.gamma.app/fhpleqvbjim2f32/821830c6218f4eddb9a81a0e7903515e/original/Schimbaricostinel.jpg',
+            'https://cdn.gamma.app/fhpleqvbjim2f32/1dd463330cf94748acea321bbc614a45/original/Situatii-riscanteStefan1.jpg',
+            'https://cdn.gamma.app/fhpleqvbjim2f32/5ed6faa8b92941998bf2878b834da17d/original/RisculMinimal3.jpg',
+            'https://cdn.gamma.app/fhpleqvbjim2f32/49cdfbb3504f44f8ae7fc2369c50a7a1/original/Screenshot-2024-06-13-185130.jpg',
+            'https://cdn.gamma.app/fhpleqvbjim2f32/db21ea2cc5f8414694a756efd0260115/original/Pregatire2.jpg',
+            'https://cdn.gamma.app/fhpleqvbjim2f32/a79e85cb9546482a9486ee411f67dab9/original/Carnetul1.jpg',
+            'https://cdn.gamma.app/fhpleqvbjim2f32/6a4df6dcdeba44bbbb080f9e9a594b9c/original/Screenshot-2024-06-13-194929.jpg'
+      ];
+
+      const imageDisplay = document.getElementById('imageDisplay');
+      const pauseBtn = document.getElementById('pauseBtn');
+      const resumeBtn = document.getElementById('resumeBtn');
+
+      let currentImageIndex = 0;
+      const delayBetweenImages = 7000; // 7 Sekunden zwischen den Bildern
+      let isPaused = false;
+      let intervalId;
+
+      function showNextImage() {
+        if (isPaused) return;
+
+        // Leere den Container, sodass immer nur ein Bild angezeigt wird
+        imageDisplay.innerHTML = "";
+
+        // Erstelle das Bild-Element
+        const img = document.createElement('img');
+        img.src = images[currentImageIndex];
+        img.alt = "Bild";
+        img.classList.add('answer-image');
+
+        // Füge das Bild dem Container hinzu
+        imageDisplay.appendChild(img);
+
+        // Aktualisiere den Index
+        currentImageIndex++;
+        if (currentImageIndex >= images.length) {
+          currentImageIndex = 0; // Starte von vorne, wenn alle Bilder angezeigt wurden
+        }
+      }
+
+      // Starte den Timer, der die Bilder wechselt
+      intervalId = setInterval(showNextImage, delayBetweenImages);
+      showNextImage(); // Bild sofort anzeigen
+
+      // Pause- und Resume-Funktionen
+      pauseBtn.addEventListener('click', function() {
+        isPaused = true;
+      });
+
+      resumeBtn.addEventListener('click', function() {
+        if (isPaused) {
+          isPaused = false;
+          showNextImage(); // Zeige sofort das nächste Bild
+        }
+      });
+    });
+  </script>
+</body>
+</html>
