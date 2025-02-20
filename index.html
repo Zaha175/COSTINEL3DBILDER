@@ -91,8 +91,9 @@
             'https://cdn.gamma.app/fhpleqvbjim2f32/6a4df6dcdeba44bbbb080f9e9a594b9c/original/Screenshot-2024-06-13-194929.jpg'
 
     ];
-         
-     const geometry = new THREE.BoxGeometry(1.5, 0.75, 0.4);
+      const geometry = new THREE.BoxGeometry(2, 2, 2);
+   
+     
         const pieces = [];
 
         images.forEach((image, index) => {
@@ -100,8 +101,10 @@
             const material = new THREE.MeshBasicMaterial({ map: texture });
             const piece = new THREE.Mesh(geometry, material);
 
-           piece.position.x = (index % 6 - 2.5) * 2.2;
-            piece.position.y = (Math.floor(index / 6) * -1.8) + 3;
+          
+          piece.position.x = (index % 6 - 2.5) * 4.0;
+           piece.position.y = (Math.floor(index / 6) * -3.0) + 4;
+
             piece.position.z = 5;
 
             piece.userData.imageSrc = image;
